@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starting Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one form-width column. Race categories read as roadside distance markers; the confirmation is a race bib. */
+:root {
+  --paper: #eef1f4;
+  --surface: #ffffff;
+  --ink: #14202e;
+  --muted: #586676;
+  --line: #cbd3dc;
+  --accent: #1746d1;
+  --on-accent: #ffffff;
+  --hivis: #e2f23a;
+  --on-hivis: #14202e;
+  --danger: #b3261e;
+  --display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --body: Barlow, "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0e141b;
+    --surface: #17202a;
+    --ink: #e9eef3;
+    --muted: #9aa8b6;
+    --line: #2f3c4a;
+    --accent: #8aa5ff;
+    --on-accent: #0e141b;
+    --danger: #ff8a80;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1rem/1.55 var(--body); }
+.wrap { max-width: 46rem; margin: 0 auto; padding-inline: 1rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.top { background: var(--surface); border-bottom: 3px solid var(--ink); }
+.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-block: .8rem; }
+.brand { font: 700 1.6rem/1 var(--display); text-transform: uppercase; letter-spacing: .05em; color: var(--ink); text-decoration: none; }
+.brand i { font-style: normal; background: var(--hivis); color: var(--on-hivis); padding: 0 .3em; }
+
+main { display: flex; flex-direction: column; gap: 1.5rem; padding-block: 2rem 4rem; }
+main > * { margin: 0; }
+h1, h2, h3 { font-family: var(--display); text-transform: uppercase; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.4rem, 8vw, 3.75rem); line-height: .95; letter-spacing: .01em; }
+h2 { font-size: 1.6rem; line-height: 1.1; letter-spacing: .03em; padding-bottom: .3rem; border-bottom: 2px solid var(--ink); }
+h3 { font-size: 1.2rem; letter-spacing: .05em; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 1.25rem; }
+.stack > * { margin: 0; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; }
+.spread { justify-content: space-between; }
+.muted { color: var(--muted); }
+.notice { background: var(--surface); border-left: 6px solid var(--ink); padding: 1rem 1.25rem; font-weight: 500; }
+.form-error { color: var(--danger); font-weight: 600; }
+.form-error:empty { display: none; }
+
+.btn { display: inline-block; background: var(--accent); color: var(--on-accent); font: 700 1.2rem/1 var(--display); text-transform: uppercase; letter-spacing: .06em; padding: .8rem 1.5rem; border: 0; border-radius: 4px; cursor: pointer; text-decoration: none; align-self: flex-start; }
+.btn:disabled { opacity: .55; cursor: progress; }
+.link { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
+.link.danger { color: var(--danger); }
+
+label { display: grid; gap: .3rem; font-size: .9rem; font-weight: 600; min-width: 0; }
+input, select, textarea { width: 100%; padding: .6rem .7rem; font: 400 1rem/1.4 var(--body); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 4px; }
+textarea { min-height: 8rem; resize: vertical; }
+.grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+.check { display: flex; gap: .7rem; align-items: flex-start; font-weight: 400; font-size: 1rem; }
+.check input { width: 1.25rem; height: 1.25rem; flex: none; margin-top: .2rem; }
+
+/* Home: upcoming races */
+.races { list-style: none; padding: 0; display: grid; gap: .75rem; }
+.race { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; align-items: stretch; background: var(--surface); border: 1.5px solid var(--ink); color: var(--ink); text-decoration: none; }
+.race .day { background: var(--ink); color: var(--paper); display: grid; place-content: center; text-align: center; padding: .75rem .25rem; font: 600 .95rem/1.2 var(--display); text-transform: uppercase; letter-spacing: .06em; }
+.race .day b { display: block; font-size: 2.6rem; line-height: .9; }
+.race .info { display: grid; align-content: center; gap: .1rem; padding: .75rem 1rem; }
+.race .info strong { font: 700 1.5rem/1.1 var(--display); text-transform: uppercase; overflow-wrap: anywhere; }
+.race .status { align-self: center; padding-right: 1rem; font: 700 1.05rem var(--display); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+
+/* Race page */
+.facts { display: grid; gap: 1rem 1.5rem; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); margin: 0; }
+.facts dt { font: 600 .85rem var(--display); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; }
+.desc { white-space: pre-line; max-width: 65ch; }
+.markers { list-style: none; padding: 0; display: grid; gap: .6rem; }
+.markers li { display: grid; grid-template-columns: minmax(5.5rem, auto) minmax(0, 1fr) auto; align-items: center; gap: 1rem; background: var(--surface); border: 1.5px solid var(--ink); padding-right: 1rem; }
+.marker { background: var(--hivis); color: var(--on-hivis); font: 700 2rem/1 var(--display); text-transform: uppercase; text-align: center; padding: .9rem .75rem; max-width: 12rem; overflow-wrap: anywhere; align-self: stretch; display: grid; place-content: center; }
+.markers .fee { font-weight: 600; }
+.markers .slots { color: var(--muted); font-size: .9rem; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* The bib is printed paper: it stays white with black numerals in both themes. */
+.bib { position: relative; background: #fff; color: #111; border: 2px solid #111; border-radius: 10px; overflow: hidden; width: 100%; max-width: 26rem; align-self: center; text-align: center; }
+.bib::before { content: ""; position: absolute; inset: .55rem; pointer-events: none; background:
+  radial-gradient(circle, #111 0 .25rem, transparent .28rem) top left / .9rem .9rem no-repeat,
+  radial-gradient(circle, #111 0 .25rem, transparent .28rem) top right / .9rem .9rem no-repeat,
+  radial-gradient(circle, #111 0 .25rem, transparent .28rem) bottom left / .9rem .9rem no-repeat,
+  radial-gradient(circle, #111 0 .25rem, transparent .28rem) bottom right / .9rem .9rem no-repeat; }
+.bib-top { background: #1746d1; color: #fff; font: 700 1.3rem/1.1 var(--display); text-transform: uppercase; letter-spacing: .05em; padding: 1rem 2.25rem; overflow-wrap: anywhere; }
+.bib-num { font: 700 clamp(5rem, 30vw, 9rem)/1 var(--display); letter-spacing: .03em; padding: .75rem .5rem .5rem; font-variant-numeric: tabular-nums; }
+.bib-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-top: 2px solid #111; padding: .7rem 2.25rem; font-weight: 600; }
+.bib-bottom b { background: #e2f23a; font: 700 1.3rem/1 var(--display); text-transform: uppercase; padding: .25rem .5rem; }
+.bib-bottom span { min-width: 0; overflow-wrap: anywhere; text-align: right; }
+
+/* Organizer */
+.events { list-style: none; padding: 0; display: grid; gap: .75rem; }
+.events li { background: var(--surface); border: 1.5px solid var(--line); padding: 1rem 1.25rem; display: grid; gap: .4rem; }
+.events strong { font: 700 1.4rem/1.1 var(--display); text-transform: uppercase; overflow-wrap: anywhere; }
+.cat-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr auto; gap: .75rem; align-items: end; }
+.cat-row .link { padding-bottom: .7rem; }
+@media (max-width: 34rem) { .cat-row { grid-template-columns: 1fr 1fr; padding-bottom: .75rem; border-bottom: 1px solid var(--line); } }
+.table { overflow-x: auto; background: var(--surface); border: 1.5px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { padding: .55rem .8rem; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line); }
+th { font: 600 .85rem var(--display); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+td.num { font-variant-numeric: tabular-nums; font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/">Starting <i>Line</i></a>
+  <a href="#/admin">Organizer</a>
+</div></header>
+<main class="wrap" id="app"></main>
+
+<script>
+const app = document.getElementById('app');
+const SHIRTS = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+const WAIVER = 'I am physically fit to join this race and I take part at my own risk. I release the organizers from liability for any injury or loss during the event.';
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+const asDate = d => new Date(d + 'T00:00');
+const fmtDate = d => asDate(d).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const fmtTime = t => new Date('1970-01-01T' + t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+const bibNo = n => String(n).padStart(4, '0');
+const full = c => c.slots > 0 && c.taken >= c.slots;
+const total = e => e.categories.reduce((n, c) => n + c.taken, 0);
+const slotsText = c => !c.slots ? 'Slots open' : full(c) ? 'Full' : `${c.slots - c.taken} of ${c.slots} slots left`;
+
+async function api(method, url, body) {
+  const res = await fetch(url, { method, headers: body && { 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || 'Something went wrong. Try again.'), { status: res.status });
+  return data;
+}
+
+function onSubmit(form, handler) {
+  form.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const btn = form.querySelector('[type=submit]'), err = form.querySelector('.form-error');
+    btn.disabled = true;
+    err.textContent = '';
+    try { await handler(Object.fromEntries(new FormData(form))); }
+    catch (e) { err.textContent = e.message; btn.disabled = false; }
+  });
+}
+
+/* ---------- Public pages ---------- */
+
+async function home() {
+  const events = await api('GET', '/api/events');
+  app.innerHTML = `<h1>Upcoming races</h1>` + (events.length
+    ? `<ul class="races">${events.map(e => `
+        <li><a class="race" href="#/e/${e.id}">
+          <span class="day"><b>${asDate(e.date).getDate()}</b>${asDate(e.date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+          <span class="info"><strong>${esc(e.name)}</strong><span>${esc(e.venue)}</span><span class="muted">${e.categories.map(c => esc(c.name)).join(' · ')}</span></span>
+          <span class="status">${e.open ? 'Register' : 'Closed'}</span>
+        </a></li>`).join('')}</ul>`
+    : `<p class="notice">No races are listed yet. If you are the organizer, add one from the <a href="#/admin">Organizer</a> page.</p>`);
+}
+
+async function eventPage(id) {
+  const e = await api('GET', `/api/events/${id}`);
+  const canRegister = e.open && e.categories.some(c => !full(c));
+  app.innerHTML = `
+    <a href="#/">All races</a>
+    <h1>${esc(e.name)}</h1>
+    <dl class="facts">
+      <div><dt>Race day</dt><dd>${fmtDate(e.date)}</dd></div>
+      ${e.time ? `<div><dt>Gun start</dt><dd>${fmtTime(e.time)}</dd></div>` : ''}
+      <div><dt>Venue</dt><dd>${esc(e.venue)}</dd></div>
+      <div><dt>Register by</dt><dd>${fmtDate(e.deadline)}</dd></div>
+    </dl>
+    ${e.description ? `<p class="desc">${esc(e.description)}</p>` : ''}
+    <h2>Categories</h2>
+    <ul class="markers">${e.categories.map(c => `
+      <li><span class="marker">${esc(c.name)}</span><span class="fee">${esc(c.fee) || 'Free'}</span><span class="slots">${slotsText(c)}</span></li>`).join('')}</ul>
+    ${e.contact ? `<p class="muted">Questions? Contact ${esc(e.contact)}.</p>` : ''}
+    ${canRegister ? regForm(e) : `<p class="notice">${e.open ? 'Every category is full.' : 'Registration for this race has closed.'}</p>`}`;
+
+  const form = document.getElementById('reg');
+  if (form) onSubmit(form, async data => {
+    const done = await api('POST', `/api/events/${id}/register`, { ...data, waiver: data.waiver === 'on' });
+    app.innerHTML = `
+      <h1>You're in.</h1>
+      <section class="bib" aria-label="Your race bib">
+        <div class="bib-top">${esc(done.event)}</div>
+        <div class="bib-num">${bibNo(done.bib)}</div>
+        <div class="bib-bottom"><b>${esc(done.category)}</b><span>${esc(done.name)}</span></div>
+      </section>
+      <p>Your bib number is <strong>${bibNo(done.bib)}</strong>. Take a screenshot or write it down. The organizer will use it to find your registration on race day.</p>
+      <p><a href="#/e/${id}" id="again">Register another runner</a> · <a href="#/">All races</a></p>`;
+    document.getElementById('again').onclick = () => render(); // same hash, so hashchange won't fire
+    scrollTo(0, 0);
+  });
+}
+
+function regForm(e) {
+  const today = new Date().toLocaleDateString('en-CA');
+  return `
+    <form id="reg" class="stack">
+      <h2>Register</h2>
+      <div class="grid">
+        <label>First name<input name="firstName" required maxlength="100" autocomplete="given-name"></label>
+        <label>Last name<input name="lastName" required maxlength="100" autocomplete="family-name"></label>
+        <label>Email<input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+        <label>Mobile number<input name="phone" type="tel" required maxlength="30" autocomplete="tel"></label>
+        <label>Date of birth<input name="birthdate" type="date" required max="${today}" autocomplete="bday"></label>
+        <label>Sex<select name="sex" required><option value="">Choose</option><option>Female</option><option>Male</option><option>Other</option></select></label>
+        <label>Race category<select name="categoryId" required><option value="">Choose</option>${e.categories.map(c =>
+          `<option value="${c.id}" ${full(c) ? 'disabled' : ''}>${esc(c.name)}${c.fee ? ' · ' + esc(c.fee) : ''}${full(c) ? ' (full)' : ''}</option>`).join('')}</select></label>
+        <label>Shirt size<select name="shirtSize" required><option value="">Choose</option>${SHIRTS.map(s => `<option>${s}</option>`).join('')}</select></label>
+      </div>
+      <h3>Emergency contact</h3>
+      <div class="grid">
+        <label>Contact name<input name="emergencyName" required maxlength="100"></label>
+        <label>Contact number<input name="emergencyPhone" type="tel" required maxlength="30"></label>
+      </div>
+      <label class="check"><input type="checkbox" name="waiver" required><span>${WAIVER}</span></label>
+      <p class="form-error" role="alert"></p>
+      <button class="btn" type="submit">Register</button>
+    </form>`;
+}
+
+/* ---------- Organizer pages ---------- */
+
+function loginPage() {
+  app.innerHTML = `
+    <h1>Organizer sign in</h1>
+    <form id="login" class="stack">
+      <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+      <p class="form-error" role="alert"></p>
+      <button class="btn" type="submit">Sign in</button>
+    </form>`;
+  onSubmit(document.getElementById('login'), async data => { await api('POST', '/api/login', data); render(); });
+}
+
+async function adminHome() {
+  const events = await api('GET', '/api/admin/events');
+  app.innerHTML = `
+    <div class="row spread"><h1>Your races</h1><button class="link" id="out">Sign out</button></div>
+    <a class="btn" href="#/admin/new">New race</a>
+    ${events.length ? `<ul class="events">${events.map(e => `
+      <li>
+        <strong>${esc(e.name)}</strong>
+        <span class="muted">${fmtDate(e.date)} · ${total(e)} registered · ${e.open ? 'Registration open' : 'Registration closed'}</span>
+        <span class="row">
+          <a href="#/admin/e/${e.id}">Registrations</a>
+          <a href="#/admin/edit/${e.id}">Edit details</a>
+          <a href="#/e/${e.id}">View public page</a>
+          <button class="link danger" data-del="${e.id}" data-name="${esc(e.name)}" data-count="${total(e)}">Delete</button>
+        </span>
+      </li>`).join('')}</ul>`
+      : `<p class="notice">No races yet. Create one and it appears on the public page right away.</p>`}`;
+  document.getElementById('out').onclick = async () => { await api('POST', '/api/logout'); location.hash = '#/'; };
+  app.onclick = async ev => {
+    const b = ev.target.closest('[data-del]');
+    if (!b || !confirm(`Delete "${b.dataset.name}" and its ${b.dataset.count} registrations? This cannot be undone.`)) return;
+    await api('DELETE', `/api/admin/events/${b.dataset.del}`);
+    render();
+  };
+}
+
+const catRow = (c = {}) => `
+  <div class="cat-row">
+    <input type="hidden" name="catId" value="${esc(c.id)}">
+    <label>Category<input name="catName" required maxlength="40" placeholder="5K" value="${esc(c.name)}"></label>
+    <label>Fee<input name="catFee" maxlength="40" placeholder="500" value="${esc(c.fee)}"></label>
+    <label>Slots<input name="catSlots" type="number" min="0" placeholder="No limit" value="${c.slots || ''}"></label>
+    <button type="button" class="link danger" data-rm>Remove</button>
+  </div>`;
+
+async function eventForm(id) {
+  const events = await api('GET', '/api/admin/events'); // also the sign-in check for a new race
+  const e = id ? events.find(x => x.id === id) : { categories: [{}] };
+  if (!e) throw new Error('This race does not exist.');
+  app.innerHTML = `
+    <a href="#/admin">Your races</a>
+    <h1>${id ? 'Edit race' : 'New race'}</h1>
+    <form id="event" class="stack">
+      <label>Event name<input name="name" required maxlength="200" value="${esc(e.name)}"></label>
+      <div class="grid">
+        <label>Race day<input name="date" type="date" required value="${esc(e.date)}"></label>
+        <label>Gun start<input name="time" type="time" value="${esc(e.time)}"></label>
+        <label>Registration deadline<input name="deadline" type="date" value="${esc(e.deadline)}"></label>
+      </div>
+      <label>Venue<input name="venue" required maxlength="200" value="${esc(e.venue)}"></label>
+      <label>Race details<textarea name="description" maxlength="5000" placeholder="Route, race kit inclusions, how to pay, prizes, assembly time">${esc(e.description)}</textarea></label>
+      <label>Contact for questions<input name="contact" maxlength="200" placeholder="Name, phone or email" value="${esc(e.contact)}"></label>
+      <h2>Categories</h2>
+      <div class="stack" id="cats">${e.categories.map(catRow).join('')}</div>
+      <button type="button" class="link" id="add" style="align-self:flex-start">Add a category</button>
+      <p class="form-error" role="alert"></p>
+      <button class="btn" type="submit">${id ? 'Save changes' : 'Publish race'}</button>
+    </form>`;
+  const cats = document.getElementById('cats');
+  document.getElementById('add').onclick = () => cats.insertAdjacentHTML('beforeend', catRow());
+  cats.onclick = ev => { if (ev.target.matches('[data-rm]')) ev.target.closest('.cat-row').remove(); };
+  onSubmit(document.getElementById('event'), async ({ name, date, time, deadline, venue, description, contact }) => {
+    const categories = [...cats.querySelectorAll('.cat-row')].map(row => ({
+      id: row.querySelector('[name=catId]').value,
+      name: row.querySelector('[name=catName]').value,
+      fee: row.querySelector('[name=catFee]').value,
+      slots: row.querySelector('[name=catSlots]').value,
+    }));
+    const body = { name, date, time, deadline, venue, description, contact, categories };
+    await (id ? api('PUT', `/api/admin/events/${id}`, body) : api('POST', '/api/admin/events', body));
+    location.hash = '#/admin';
+  });
+}
+
+async function registrationsPage(id) {
+  const { event, registrations } = await api('GET', `/api/admin/events/${id}/registrations`);
+  app.innerHTML = `
+    <a href="#/admin">Your races</a>
+    <h1>${esc(event.name)}</h1>
+    <ul class="markers">${event.categories.map(c => `
+      <li><span class="marker">${esc(c.name)}</span><span class="fee">${c.taken} registered</span><span class="slots">${slotsText(c)}</span></li>`).join('')}</ul>
+    <div class="row spread"><h2>${registrations.length} registered</h2>
+      ${registrations.length ? `<a href="/api/admin/events/${id}/registrations.csv" download>Download as spreadsheet (CSV)</a>` : ''}</div>
+    ${registrations.length ? `<div class="table"><table>
+      <thead><tr><th>Bib</th><th>Name</th><th>Category</th><th>Email</th><th>Mobile</th><th>Born</th><th>Sex</th><th>Shirt</th><th>Emergency contact</th><th>Registered</th><th></th></tr></thead>
+      <tbody>${registrations.map(r => `<tr>
+        <td class="num">${bibNo(r.bib)}</td><td>${esc(r.firstName)} ${esc(r.lastName)}</td><td>${esc(r.category)}</td>
+        <td>${esc(r.email)}</td><td>${esc(r.phone)}</td><td>${esc(r.birthdate)}</td><td>${esc(r.sex)}</td><td>${esc(r.shirtSize)}</td>
+        <td>${esc(r.emergencyName)} · ${esc(r.emergencyPhone)}</td><td>${new Date(r.createdAt).toLocaleDateString()}</td>
+        <td><button class="link danger" data-del="${r.id}" data-name="${esc(r.firstName)} ${esc(r.lastName)}">Remove</button></td>
+      </tr>`).join('')}</tbody></table></div>`
+      : `<p class="notice">Nobody has registered yet. Share the <a href="#/e/${id}">public page</a> with your runners.</p>`}`;
+  app.onclick = async ev => {
+    const b = ev.target.closest('[data-del]');
+    if (!b || !confirm(`Remove ${b.dataset.name} from this race?`)) return;
+    await api('DELETE', `/api/admin/registrations/${b.dataset.del}`);
+    render();
+  };
+}
+
+/* ---------- Router ---------- */
+
+const routes = [
+  [/^#\/e\/([\w-]+)$/, eventPage],
+  [/^#\/admin$/, adminHome],
+  [/^#\/admin\/new$/, () => eventForm()],
+  [/^#\/admin\/edit\/([\w-]+)$/, eventForm],
+  [/^#\/admin\/e\/([\w-]+)$/, registrationsPage],
+];
+async function render() {
+  const hash = location.hash || '#/';
+  app.onclick = null;
+  try {
+    const hit = routes.find(([re]) => re.test(hash));
+    await (hit ? hit[1](hit[0].exec(hash)[1]) : home());
+  } catch (err) {
+    if (err.status === 401) return loginPage();
+    app.innerHTML = `<p class="notice">${esc(err.message)}</p><p><a href="#/">Back to all races</a></p>`;
+  }
+  scrollTo(0, 0);
+}
+addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
